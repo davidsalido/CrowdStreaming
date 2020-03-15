@@ -2,6 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.crowdstreaming">
 
+    <uses-feature android:name="android.hardware.wifi.aware" />
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,11 +21,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ui.streaming.StreamingActivity"></activity>
         <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:name=".ui.SettingsActivity"
+            android:label="@string/title_activity_settings" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.main.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
