@@ -8,8 +8,8 @@
 
     <TextureView
         android:id="@+id/surface"
-        android:layout_width="354dp"
-        android:layout_height="194dp"
+        android:layout_width="1920px"
+        android:layout_height="1080px"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

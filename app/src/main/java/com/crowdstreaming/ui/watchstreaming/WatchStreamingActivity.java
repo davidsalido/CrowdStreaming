@@ -1,6 +1,7 @@
 package com.crowdstreaming.ui.watchstreaming;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.pm.ActivityInfo;
 import android.net.LocalSocket;
@@ -12,6 +13,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.crowdstreaming.R;
@@ -102,7 +104,12 @@ public class WatchStreamingActivity extends AppCompatActivity implements Surface
 
                 mMediaPlayer.setMedia(m);
                 mMediaPlayer.play();
+/*
+                android:layout_width="326dp"
+                android:layout_height="650dp"*/
 
+
+                //surfaceView.setLayoutParams(new ConstraintLayout.LayoutParams(1920,1080));
                 surfaceView.setRotation(90);
             }
         });
