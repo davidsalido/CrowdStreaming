@@ -2,6 +2,7 @@ package com.crowdstreaming.ui.watchstreaming;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.pm.ActivityInfo;
 import android.net.LocalSocket;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
 
@@ -33,7 +35,7 @@ import java.util.ArrayList;
 public class WatchStreamingActivity extends AppCompatActivity implements SurfaceHolder.Callback, MediaPlayer.EventListener, IVLCVout.Callback {
 
     private Subscriber subscriber;
-    private SurfaceView surfaceView;
+    private TextureView surfaceView;
     private Button rep;
 
     private LibVLC libvlc;
@@ -48,8 +50,6 @@ public class WatchStreamingActivity extends AppCompatActivity implements Surface
 
 
         surfaceView = findViewById(R.id.surface);
-        final SurfaceHolder holder = surfaceView.getHolder();
-        holder.addCallback(this);
 
 
         Thread t = new Thread(new Runnable() {
@@ -76,11 +76,10 @@ public class WatchStreamingActivity extends AppCompatActivity implements Surface
                 options.add("--avcodec-codec=h264");
                 options.add("--file-logging");
                 options.add("--logfile=vlc-log.txt");
-                //options.add("--video-filter=rotate {angle=90}");
+                options.add("--video-filter=rotate {angle=90}");
 
 
                 libvlc = new LibVLC(getApplicationContext(), options);
-                holder.setKeepScreenOn(true);
 
                 // Create media player
                 mMediaPlayer = new MediaPlayer(libvlc);
@@ -103,6 +102,8 @@ public class WatchStreamingActivity extends AppCompatActivity implements Surface
 
                 mMediaPlayer.setMedia(m);
                 mMediaPlayer.play();
+
+                surfaceView.setRotation(90);
             }
         });
     }
