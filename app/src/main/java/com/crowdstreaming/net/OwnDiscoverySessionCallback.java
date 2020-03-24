@@ -4,11 +4,14 @@ import android.net.wifi.aware.DiscoverySessionCallback;
 import android.net.wifi.aware.PeerHandle;
 import android.widget.Toast;
 
+import com.crowdstreaming.net.connection.AbstractConnection;
+
 public abstract class OwnDiscoverySessionCallback extends DiscoverySessionCallback {
 
     private PeerHandle peerHandle;
     private int portToUse;
     private byte[] otherIp;
+    private AbstractConnection connection;
 
     public static final String[] MESSAGES = {"ACK", "CONNECTION", "IP", "PORT"};
 
@@ -40,5 +43,13 @@ public abstract class OwnDiscoverySessionCallback extends DiscoverySessionCallba
 
     public void setOtherIp(byte[] otherIp) {
         this.otherIp = otherIp;
+    }
+
+    public AbstractConnection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(AbstractConnection connection) {
+        this.connection = connection;
     }
 }
