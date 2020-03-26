@@ -3,13 +3,17 @@ package com.crowdstreaming.ui.main;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.wifi.aware.WifiAwareManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.widget.Toast;
 
 import com.crowdstreaming.R;
+import com.crowdstreaming.net.Attached;
+import com.crowdstreaming.net.OwnIdentityChangedListener;
 import com.crowdstreaming.ui.SettingsActivity;
 import com.crowdstreaming.ui.streaming.StreamingActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -28,8 +32,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     private AppBarConfiguration mAppBarConfiguration;
     private View settings;
-    public String hola = "hola";
-    private MainPresenter presenter;
     private FloatingActionButton cameraButton;
 
     @Override
@@ -54,8 +56,9 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         checkWifiAwareAvaliability();
 
-        presenter = new MainPresenter(this);
-        presenter.viewCreated();
+        WifiAwareManager wifiAwareManager = (WifiAwareManager) getContext().getSystemService(Context.WIFI_AWARE_SERVICE);
+        Attached attached = new Attached(this);
+        wifiAwareManager.attach(attached, new OwnIdentityChangedListener(),new Handler());
     }
 
     private void checkWifiAwareAvaliability(){

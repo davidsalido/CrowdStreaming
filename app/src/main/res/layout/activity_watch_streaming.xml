@@ -4,27 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.avaliablesstreamings.AvaliablesStreamingsFragment">
+    tools:context=".ui.watchstreaming.WatchStreamingActivity">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="103dp"
-        android:visibility="invisible"
-        android:layout_height="103dp"
+    <TextureView
+        android:id="@+id/texture"
+        android:layout_width="1920px"
+        android:layout_height="1080px"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ListView
-        android:id="@+id/streaminglist"
-        android:layout_width="409dp"
-        android:layout_height="729dp"
+    <TextView
+        android:id="@+id/finished"
+        android:layout_width="392dp"
+        android:layout_height="157dp"
+        android:gravity="center_vertical"
+        android:text="la retransmisión ha finalizado"
+        android:textAlignment="center"
+        android:textColor="#EF2020"
+        android:textSize="24sp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
+        app:layout_constraintTop_toTopOf="parent" />
 
-    </ListView>
 </androidx.constraintlayout.widget.ConstraintLayout>
