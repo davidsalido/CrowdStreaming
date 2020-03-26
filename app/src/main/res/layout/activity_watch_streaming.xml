@@ -7,23 +7,28 @@
     tools:context=".ui.watchstreaming.WatchStreamingActivity">
 
     <TextureView
-        android:id="@+id/surface"
+        android:id="@+id/texture"
         android:layout_width="1920px"
         android:layout_height="1080px"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/rep"
-        android:layout_width="152dp"
-        android:layout_height="118dp"
-        android:text="Button"
+    <TextView
+        android:id="@+id/finished"
+        android:layout_width="392dp"
+        android:layout_height="157dp"
+        android:gravity="center_vertical"
+        android:text="la retransmisión ha finalizado"
+        android:textAlignment="center"
+        android:textColor="#EF2020"
+        android:textSize="24sp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.445"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.953" />
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

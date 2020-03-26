@@ -7,12 +7,11 @@ import android.net.wifi.aware.PublishDiscoverySession;
 import android.os.Build;
 
 import com.crowdstreaming.net.connection.PublisherConnection;
-import com.crowdstreaming.ui.streaming.StreamingPresenter;
+import com.crowdstreaming.ui.streaming.StreamingView;
 
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,12 +26,12 @@ public class Publisher extends OwnDiscoverySessionCallback {
 
     private PublishDiscoverySession session;
 
-    private StreamingPresenter presenter;
+    private StreamingView view;
 
     private ConnectivityManager connectivityManager;
 
-    public Publisher(StreamingPresenter presenter, ConnectivityManager connectivityManager){
-        this.presenter = presenter;
+    public Publisher(StreamingView view, ConnectivityManager connectivityManager){
+        this.view = view;
         this.connectivityManager = connectivityManager;
     }
 
@@ -40,7 +39,7 @@ public class Publisher extends OwnDiscoverySessionCallback {
     public void onPublishStarted(PublishDiscoverySession session) {
         super.onPublishStarted(session);
         this.session = session;
-        presenter.showMessage("Sesión publisher creada");
+        view.showMessage("Sesión publisher creada");
     }
 
     @Override
@@ -70,6 +69,9 @@ public class Publisher extends OwnDiscoverySessionCallback {
         }
         else if(messageString.contains("PORT:")){
             this.setPortToUse(Integer.parseInt(messageString.split(":")[1]));
+        }
+        else if(messageString.contains("startstreaming")){
+            view.startStreamingPublic();
         }
         else{
             String ipAddr = null;
@@ -147,4 +149,9 @@ public class Publisher extends OwnDiscoverySessionCallback {
         clientThread.start();
 
     }
+
+    public void callSubscriber(){
+        session.sendMessage(getPeerHandle(),1,"streamingstarted".getBytes());
+    }
+
 }

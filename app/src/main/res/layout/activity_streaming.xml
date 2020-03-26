@@ -8,37 +8,33 @@
 
     <FrameLayout
         android:id="@+id/camera"
-        android:layout_width="310dp"
-        android:layout_height="628dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:keepScreenOn="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.551"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.368">
+        app:layout_constraintVertical_bias="0.448">
 
     </FrameLayout>
 
-    <Button
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/rec"
-        android:layout_width="114dp"
-        android:layout_height="108dp"
-        android:text="REC"
+        android:layout_width="72dp"
+        android:layout_height="82dp"
+        android:backgroundTint="#FF0000"
+        android:clickable="true"
+        android:focusable="true"
+        app:backgroundTint="?attr/colorButtonNormal"
+        app:borderWidth="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.852" />
+        app:layout_constraintVertical_bias="0.97"
+        app:useCompatPadding="true" />
 
-    <Button
-        android:id="@+id/btfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -153,7 +153,6 @@ public class StreamProxy implements Runnable {
                 while (isRunning) {
 
                     // See if there's more to send
-                    System.out.println("Size: " + file.length());
                     fc++;
                     if (file.exists()) {
 
@@ -162,10 +161,8 @@ public class StreamProxy implements Runnable {
 
                         int cbToRead = Math.min(cbToSendThisBatch, buff.length);
                         int cbRead;
-                        System.out.println("empezamos");
-                        while ((cbRead = input.read(buff, 0, cbToRead)) > 0) {
+                        while ((cbRead = input.read(buff, 0, cbToRead)) > 0 && isRunning) {
 
-                            System.out.println("leyendo");
                             cbToSend -= cbRead;
                             output.write(buff, 0, cbRead);
                             output.flush();
@@ -175,8 +172,6 @@ public class StreamProxy implements Runnable {
                     }
 
                     // If we did nothing this batch, block for a second
-
-                    System.out.println("Blocking until more data appears");
 
 
                 }

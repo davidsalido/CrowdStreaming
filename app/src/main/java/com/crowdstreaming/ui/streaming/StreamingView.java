@@ -8,4 +8,6 @@ public interface StreamingView {
 
     public ConnectivityManager getConnectivityManager();
 
+    public void startStreamingPublic();
+
 }

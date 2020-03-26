@@ -3,14 +3,14 @@ package com.crowdstreaming.net;
 import android.net.wifi.aware.AttachCallback;
 import android.net.wifi.aware.WifiAwareSession;
 
-import com.crowdstreaming.ui.main.MainPresenter;
+import com.crowdstreaming.ui.main.MainView;
 
 public class Attached extends AttachCallback {
 
-    private MainPresenter presenter;
+    private MainView view;
 
-    public Attached(MainPresenter presenter){
-        this.presenter = presenter;
+    public Attached(MainView view){
+        this.view = view;
     }
 
     @Override
@@ -20,6 +20,6 @@ public class Attached extends AttachCallback {
 
     @Override
     public void onAttachFailed() {
-        presenter.error("Ha habido un error, reinicia la aplicación");
+        view.showError("Ha habido un error, reinicia la aplicación");
     }
 }

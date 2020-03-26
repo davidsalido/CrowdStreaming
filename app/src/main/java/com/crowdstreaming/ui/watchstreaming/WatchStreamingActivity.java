@@ -1,63 +1,57 @@
 package com.crowdstreaming.ui.watchstreaming;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.pm.ActivityInfo;
-import android.net.LocalSocket;
+import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.ParcelFileDescriptor;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crowdstreaming.R;
 import com.crowdstreaming.net.Subscriber;
-import com.crowdstreaming.ui.avaliablesstreamings.AvaliablesStreamingsPresenter;
+import com.crowdstreaming.net.SubscriberSingleton;
+import com.crowdstreaming.ui.avaliablesstreamings.AvaliablesStreamingsFragment;
 
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 
-public class WatchStreamingActivity extends AppCompatActivity implements SurfaceHolder.Callback, MediaPlayer.EventListener, IVLCVout.Callback {
+public class WatchStreamingActivity extends AppCompatActivity implements TextureView.SurfaceTextureListener, MediaPlayer.EventListener, IVLCVout.Callback, SubscriberObserver {
 
-    private Subscriber subscriber;
-    private TextureView surfaceView;
-    private Button rep;
+    private TextureView textureView;
 
     private LibVLC libvlc;
     private MediaPlayer mMediaPlayer = null;
+
+    private String videoFilePath;
+    private TextView finished;
+    private StreamProxy streamProxy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_watch_streaming);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        subscriber = AvaliablesStreamingsPresenter.subscriber;
+        videoFilePath = getIntent().getExtras().getString("path");
+        SubscriberSingleton.subscriber.setObserver(this);
+        finished = findViewById(R.id.finished);
 
-
-        surfaceView = findViewById(R.id.surface);
-
+        textureView = findViewById(R.id.texture);
+        textureView.setSurfaceTextureListener(this);
 
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                StreamProxy streamProxy = new StreamProxy();
+                streamProxy = new StreamProxy();
                 streamProxy.start();
 
             }
@@ -65,73 +59,51 @@ public class WatchStreamingActivity extends AppCompatActivity implements Surface
 
         t.start();
 
-        rep = findViewById(R.id.rep);
-
-        rep.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                ArrayList<String> options = new ArrayList<String>();
-                options.add("--aout=opensles"); // time stretching
-                options.add("-vvv"); // verbosity
-                options.add("--aout=opensles");
-                options.add("--avcodec-codec=h264");
-                options.add("--file-logging");
-                options.add("--logfile=vlc-log.txt");
-                options.add("--video-filter=rotate {angle=90}");
-
-
-                libvlc = new LibVLC(getApplicationContext(), options);
-
-                // Create media player
-                mMediaPlayer = new MediaPlayer(libvlc);
-                mMediaPlayer.setEventListener(WatchStreamingActivity.this);
-
-                // Set up video output
-                final IVLCVout vout = mMediaPlayer.getVLCVout();
-                vout.setVideoView(surfaceView);
-
-                int mHeight = surfaceView.getHeight();
-                int mWidth = surfaceView.getWidth();
-
-                vout.setWindowSize(mWidth, mHeight);
-                vout.addCallback(WatchStreamingActivity.this);
-                vout.attachViews();
-
-
-
-                Media m = new Media(libvlc, Uri.parse("http://127.0.0.1:8888/" + getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) + "/salida.mp4"));
-
-                mMediaPlayer.setMedia(m);
-                mMediaPlayer.play();
-/*
-                android:layout_width="326dp"
-                android:layout_height="650dp"*/
-
-
-                //surfaceView.setLayoutParams(new ConstraintLayout.LayoutParams(1920,1080));
-                surfaceView.setRotation(90);
-            }
-        });
     }
 
 
 
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
+    private void viewStreaming(){
+        System.out.println("viewing");
+
+        ArrayList<String> options = new ArrayList<String>();
+        options.add("--aout=opensles"); // time stretching
+        options.add("-vvv"); // verbosity
+        options.add("--aout=opensles");
+        options.add("--avcodec-codec=h264");
+        options.add("--file-logging");
+        options.add("--logfile=vlc-log.txt");
+        options.add("--video-filter=rotate {angle=90}");
 
 
+        libvlc = new LibVLC(getApplicationContext(), options);
+
+        // Create media player
+        mMediaPlayer = new MediaPlayer(libvlc);
+        mMediaPlayer.setEventListener(WatchStreamingActivity.this);
+
+        // Set up video output
+        final IVLCVout vout = mMediaPlayer.getVLCVout();
+        vout.setVideoView(textureView);
+
+        int mHeight = textureView.getHeight();
+        int mWidth = textureView.getWidth();
+
+        vout.setWindowSize(mWidth, mHeight);
+        vout.addCallback(WatchStreamingActivity.this);
+        vout.attachViews();
+
+        System.out.println(videoFilePath);
+
+        Media m = new Media(libvlc, Uri.parse("http://127.0.0.1:8888/" + videoFilePath));
+
+        mMediaPlayer.setMedia(m);
+        mMediaPlayer.play();
+
+        textureView.setRotation(90);
     }
 
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-
-    }
 
     @Override
     public void onEvent(MediaPlayer.Event event) {
@@ -146,5 +118,46 @@ public class WatchStreamingActivity extends AppCompatActivity implements Surface
     @Override
     public void onSurfacesDestroyed(IVLCVout vlcVout) {
 
+    }
+
+    @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        viewStreaming();
+    }
+
+    @Override
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
+    }
+
+    @Override
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        return false;
+    }
+
+    @Override
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
+    }
+
+    @Override
+    public void stopStreaming() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                SubscriberSingleton.subscriber.setObserver(null);
+                SubscriberSingleton.subscriber.closeSocket();
+                textureView.setVisibility(View.INVISIBLE);
+                streamProxy.stop();
+                finished.setVisibility(View.VISIBLE);
+            }
+        });
+
+    }
+
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        streamProxy.stop();
     }
 }

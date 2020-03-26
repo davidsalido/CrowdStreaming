@@ -32,6 +32,7 @@ public class OwnNetworkCallback extends ConnectivityManager.NetworkCallback {
     @Override
     public void onLost(Network network) {
         super.onLost(network);
+        System.out.println("Se ha perdido");
     }
 
     @Override

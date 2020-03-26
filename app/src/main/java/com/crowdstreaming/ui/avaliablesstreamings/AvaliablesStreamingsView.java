@@ -10,8 +10,10 @@ public interface AvaliablesStreamingsView {
 
     public ConnectivityManager getConnectivityManager();
 
-    public File carpeta();
 
     public void cambiarVista();
+
+    public void saveFile();
+
 
 }
