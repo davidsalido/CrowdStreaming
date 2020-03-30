@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         NavigationView navigationView = findViewById(R.id.nav_view);
 
 
-        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
+        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_streaming, R.id.nav_avaliables, R.id.nav_gallery, R.id.nav_gateway)
                 .setDrawerLayout(drawer)
                 .build();
 

@@ -181,7 +181,7 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        stopStreaming();
+        if(streaming) stopStreaming();
     }
 
     @Override

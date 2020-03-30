@@ -9,12 +9,23 @@
             android:icon="@android:drawable/ic_dialog_info"
             android:title="@string/menu_home" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_streaming"
             android:icon="@android:drawable/presence_video_away"
-            android:title="@string/menu_gallery" />
+            android:title="@string/menu_streaming" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_avaliables"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
+            android:title="@string/menu_avaliables" />
+
+        <item
+            android:id="@+id/nav_gallery"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/menu_gallery" />
+
+        <item
+            android:id="@+id/nav_gateway"
+            android:icon="@android:drawable/ic_menu_upload"
+            android:title="@string/menu_gateway" />
+
     </group>
 </menu>
