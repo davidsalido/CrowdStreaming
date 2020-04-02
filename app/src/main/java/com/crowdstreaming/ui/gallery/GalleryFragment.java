@@ -1,65 +1,118 @@
 package com.crowdstreaming.ui.gallery;
 
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ThumbnailUtils;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.crowdstreaming.R;
+import com.crowdstreaming.ui.videoplayer.VideoPlayerActivity;
+import com.crowdstreaming.ui.watchstreaming.WatchStreamingActivity;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link GalleryFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.io.File;
+
+import wseemann.media.FFmpegMediaMetadataRetriever;
+
+
 public class GalleryFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public GalleryFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment GalleryFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static GalleryFragment newInstance(String param1, String param2) {
-        GalleryFragment fragment = new GalleryFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private RecyclerView recyclerView;
+    private GalleryAdapter adapter;
+    private GalleryListData[] galleryListData;
+    private File[] videoFiles;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_gallery, container, false);
+    }
+
+    private Bitmap rotateBitmap(Bitmap bitmap){
+        Matrix matrix = new Matrix();
+
+        matrix.postRotate(90);
+
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), true);
+
+        return Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        String path = getActivity().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString();
+
+        File directory = new File(path);
+        final File[] files = directory.listFiles();
+        videoFiles = directory.listFiles();
+
+        String [] names = new String[files.length];
+        galleryListData = new GalleryListData[files.length];
+
+
+
+        for (int i = 0; i < files.length; i++) {
+            names[i] = files[i].getName();
+
+            galleryListData[i] = new GalleryListData(names[i], null);
+        }
+
+
+
+
+
+        recyclerView = getActivity().findViewById(R.id.listVideos);
+        adapter = new GalleryAdapter(galleryListData, this);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
+
+
+
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                FFmpegMediaMetadataRetriever mmr = new FFmpegMediaMetadataRetriever();
+
+                for (int i = 0; i < files.length; i++) {
+                    mmr.setDataSource(files[i].getPath());
+                    Bitmap b = mmr.getFrameAtTime(0, FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
+                    galleryListData[i].setThumbail(rotateBitmap(b));
+
+                    if(getActivity() != null)
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+                    else break;
+                }
+
+                mmr.release();
+            }
+        });
+        t.start();
+    }
+
+    public void startVideo(int position){
+        Intent intent = new Intent(getContext(), VideoPlayerActivity.class);
+        intent.putExtra("path",videoFiles[position].getAbsolutePath());
+        getActivity().startActivity(intent);
     }
 }

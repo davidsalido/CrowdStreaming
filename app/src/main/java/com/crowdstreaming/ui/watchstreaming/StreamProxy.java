@@ -187,7 +187,6 @@ public class StreamProxy implements Runnable {
 
             // Cleanup
             try {
-                System.out.println("cerrando");
                 if (output != null) {
                     output.close();
                 }

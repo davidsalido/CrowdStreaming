@@ -145,11 +145,11 @@ public class WatchStreamingActivity extends AppCompatActivity implements Texture
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                SubscriberSingleton.subscriber.setObserver(null);
-                SubscriberSingleton.subscriber.closeSocket();
-                textureView.setVisibility(View.INVISIBLE);
-                streamProxy.stop();
-                finished.setVisibility(View.VISIBLE);
+            SubscriberSingleton.subscriber.setObserver(null);
+            SubscriberSingleton.subscriber.closeSocket();
+            textureView.setVisibility(View.INVISIBLE);
+            streamProxy.stop();
+            finished.setVisibility(View.VISIBLE);
             }
         });
 
