@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.media.MediaRecorder;
 import android.net.ConnectivityManager;
@@ -66,6 +67,8 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
         final FrameLayout preview =  findViewById(R.id.camera);
         preview.addView(mPreview);
 
+        this.getWindow().setStatusBarColor(Color.argb(255,0,0,0));
+        this.getWindow().setNavigationBarColor( Color.argb(255,0,0,0));
     }
 
     public void startStreamingPublic(){

@@ -3,6 +3,7 @@ package com.crowdstreaming.ui.watchstreaming;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Bundle;
@@ -58,7 +59,8 @@ public class WatchStreamingActivity extends AppCompatActivity implements Texture
         });
 
         t.start();
-
+        this.getWindow().setStatusBarColor(Color.argb(255,0,0,0));
+        this.getWindow().setNavigationBarColor( Color.argb(255,0,0,0));
     }
 
 

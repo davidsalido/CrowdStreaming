@@ -9,6 +9,7 @@ import android.media.ThumbnailUtils;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,12 +18,17 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import com.crowdstreaming.R;
 import com.crowdstreaming.ui.videoplayer.VideoPlayerActivity;
 import com.crowdstreaming.ui.watchstreaming.WatchStreamingActivity;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import wseemann.media.FFmpegMediaMetadataRetriever;
 
@@ -31,8 +37,8 @@ public class GalleryFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private GalleryAdapter adapter;
-    private GalleryListData[] galleryListData;
-    private File[] videoFiles;
+    private ArrayList<GalleryListData> galleryListData;
+    private ArrayList<File> videoFiles;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,30 +63,23 @@ public class GalleryFragment extends Fragment {
         String path = getActivity().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString();
 
         File directory = new File(path);
-        final File[] files = directory.listFiles();
-        videoFiles = directory.listFiles();
+        videoFiles = new ArrayList<>(Arrays.asList(directory.listFiles()));
 
-        String [] names = new String[files.length];
-        galleryListData = new GalleryListData[files.length];
+        galleryListData = new ArrayList<>(videoFiles.size());
 
 
 
-        for (int i = 0; i < files.length; i++) {
-            names[i] = files[i].getName();
+        for (int i = 0; i < videoFiles.size(); i++) {
 
-            galleryListData[i] = new GalleryListData(names[i], null);
+            galleryListData.add(new GalleryListData(videoFiles.get(i).getName(), null));
         }
-
-
-
 
 
         recyclerView = getActivity().findViewById(R.id.listVideos);
         adapter = new GalleryAdapter(galleryListData, this);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2 ,GridLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(adapter);
-
 
 
         Thread t = new Thread(new Runnable() {
@@ -89,19 +88,34 @@ public class GalleryFragment extends Fragment {
 
                 FFmpegMediaMetadataRetriever mmr = new FFmpegMediaMetadataRetriever();
 
-                for (int i = 0; i < files.length; i++) {
-                    mmr.setDataSource(files[i].getPath());
-                    Bitmap b = mmr.getFrameAtTime(0, FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
-                    galleryListData[i].setThumbail(rotateBitmap(b));
+                int size = videoFiles.size();
+                for (int i = 0; i < size; i++) {
+                    try {
+                        System.out.println(videoFiles.get(i).getPath());
+                        mmr.setDataSource(videoFiles.get(i).getPath());
+                        Bitmap b = mmr.getFrameAtTime(0, FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
+                        galleryListData.get(i).setThumbail(rotateBitmap(b));
 
-                    if(getActivity() != null)
+                        if (getActivity() != null)
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
+                        else break;
+                    }catch (Exception e){
+                        galleryListData.remove(i);
+                        videoFiles.remove(i);
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 adapter.notifyDataSetChanged();
                             }
                         });
-                    else break;
+                        size -= 1;
+                        i -= 1;
+                    }
                 }
 
                 mmr.release();
@@ -112,7 +126,7 @@ public class GalleryFragment extends Fragment {
 
     public void startVideo(int position){
         Intent intent = new Intent(getContext(), VideoPlayerActivity.class);
-        intent.putExtra("path",videoFiles[position].getAbsolutePath());
+        intent.putExtra("path",videoFiles.get(position).getAbsolutePath());
         getActivity().startActivity(intent);
     }
 }

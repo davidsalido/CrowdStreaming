@@ -3,13 +3,16 @@ package com.crowdstreaming.ui.videoplayer;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 
 import com.crowdstreaming.R;
 import com.crowdstreaming.ui.watchstreaming.WatchStreamingActivity;
@@ -27,9 +30,10 @@ public class VideoPlayerActivity extends AppCompatActivity  implements TextureVi
     private LibVLC libvlc;
     private MediaPlayer mMediaPlayer = null;
     private String videoFilePath;
-    private Button play, pause;
-    private ProgressBar progressBar;
+    private ImageView play;
+    private SeekBar seekBar;
     private Thread progressThread;
+    private Boolean progressing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,48 +45,76 @@ public class VideoPlayerActivity extends AppCompatActivity  implements TextureVi
         textureView = findViewById(R.id.videoplayer);
         textureView.setSurfaceTextureListener(this);
 
-        progressBar = findViewById(R.id.videoProgress);
+        seekBar = findViewById(R.id.seekBar);
 
         play = findViewById(R.id.play);
-        pause = findViewById(R.id.pause);
 
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!mMediaPlayer.isPlaying()) {
                     mMediaPlayer.play();
+                    play.setImageResource(android.R.drawable.ic_media_pause);
+                }
+                else{
+                    mMediaPlayer.pause();
+                    play.setImageResource(android.R.drawable.ic_media_play);
                 }
             }
         });
 
-        pause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mMediaPlayer.pause();
-            }
-        });
+
 
         progressThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                progressing = true;
                 while(true){
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    final float progress = mMediaPlayer.getPosition() * 100;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressBar.setProgress((int) progress);
+                    if(progressing) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
-                    });
-
+                        final float progress = mMediaPlayer.getPosition() * 100;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                seekBar.setProgress((int) progress);
+                            }
+                        });
+                    }
                 }
             }
         });
 
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            private float pos;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser){
+                    pos = progress;
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                progressing = false;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mMediaPlayer.setPosition(pos / 100);
+                mMediaPlayer.play();
+                progressing = true;
+                play.setImageResource(android.R.drawable.ic_media_pause);
+            }
+        });
+
+        this.getWindow().setStatusBarColor(Color.argb(255,0,0,0));
+        this.getWindow().setNavigationBarColor( Color.argb(255,0,0,0));
     }
 
     private void startPlayVideo(){
@@ -94,6 +126,7 @@ public class VideoPlayerActivity extends AppCompatActivity  implements TextureVi
         options.add("--aout=opensles");
         options.add("--avcodec-codec=h264");
         options.add("--file-logging");
+        options.add("--input-repeat=2");
         options.add("--logfile=vlc-log.txt");
         options.add("--video-filter=rotate {angle=90}");
 
@@ -121,6 +154,7 @@ public class VideoPlayerActivity extends AppCompatActivity  implements TextureVi
 
         mMediaPlayer.setMedia(m);
         mMediaPlayer.play();
+
 
         textureView.setRotation(90);
         progressThread.start();

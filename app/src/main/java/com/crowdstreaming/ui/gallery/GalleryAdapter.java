@@ -9,18 +9,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.crowdstreaming.R;
 import com.crowdstreaming.ui.watchstreaming.WatchStreamingActivity;
 
+import java.util.ArrayList;
+
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder>{
 
-    private GalleryListData[] listdata;
+    private ArrayList<GalleryListData> listdata;
     private GalleryFragment fragment;
 
     // RecyclerView recyclerView;
-    public GalleryAdapter(GalleryListData[] listdata, GalleryFragment fragment) {
+    public GalleryAdapter(ArrayList<GalleryListData> listdata, GalleryFragment fragment) {
         this.listdata = listdata;
         this.fragment = fragment;
     }
@@ -30,20 +33,20 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View listItem= layoutInflater.inflate(R.layout.list_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(listItem);
+
+
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        final GalleryListData myListData = listdata[position];
-        holder.textView.setText(listdata[position].getPath());
-        holder.imageView.setImageBitmap(listdata[position].getThumbail());
+        final GalleryListData myListData = listdata.get(position);
+        holder.textView.setText(listdata.get(position).getPath());
+        holder.imageView.setImageBitmap(listdata.get(position).getThumbail());
         holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 fragment.startVideo(position);
-
             }
         });
     }
@@ -51,7 +54,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return listdata.length;
+        return listdata.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
