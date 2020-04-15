@@ -3,8 +3,10 @@
     <string name="action_settings">Ajustes</string>
 
     <string name="menu_home">Quienes somos</string>
-    <string name="menu_gallery">Retransmitir</string>
-    <string name="menu_slideshow">Streaming disponibles</string>
+    <string name="menu_streaming">Retransmitir</string>
+    <string name="menu_avaliables">Streaming disponibles</string>
+    <string name="menu_gallery">Galeria</string>
+    <string name="menu_gateway">Subir a internet</string>
 
     <string name="home_second">Home Second</string>
     <string name="title_activity_settings">Settings</string>
@@ -32,4 +34,7 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

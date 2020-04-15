@@ -1,43 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraint"
+
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.streaming.StreamingActivity">
+    android:layout_height="360dp">
 
-
-
-    <FrameLayout
-        android:id="@+id/camera"
+    <ImageView
+        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:keepScreenOn="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.551"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.448">
-
-    </FrameLayout>
-
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/rec"
-        android:layout_width="72dp"
-        android:layout_height="82dp"
-        android:backgroundTint="#FF0000"
-        android:clickable="true"
-        android:focusable="true"
-        app:backgroundTint="?attr/colorButtonNormal"
-        app:borderWidth="4dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.97"
-        app:useCompatPadding="true" />
+        app:layout_constraintVertical_bias="0.13999999"
+        app:srcCompat="@drawable/side_nav_bar" />
 
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="261dp"
+        android:layout_height="37dp"
+        android:gravity="center"
+        android:text="TextView"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.90999997" />
 </androidx.constraintlayout.widget.ConstraintLayout>

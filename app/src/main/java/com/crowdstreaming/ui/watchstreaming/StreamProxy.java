@@ -36,9 +36,9 @@ public class StreamProxy implements Runnable {
             socket.setSoTimeout(5000);
             port = socket.getLocalPort();
         } catch (UnknownHostException e) {
-            System.out.println("1");
+            e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("IOException initializing server");
+            e.printStackTrace();
         }
 
     }
@@ -187,7 +187,6 @@ public class StreamProxy implements Runnable {
 
             // Cleanup
             try {
-                System.out.println("cerrando");
                 if (output != null) {
                     output.close();
                 }

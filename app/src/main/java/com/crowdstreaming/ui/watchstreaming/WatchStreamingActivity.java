@@ -3,6 +3,7 @@ package com.crowdstreaming.ui.watchstreaming;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Bundle;
@@ -58,7 +59,8 @@ public class WatchStreamingActivity extends AppCompatActivity implements Texture
         });
 
         t.start();
-
+        this.getWindow().setStatusBarColor(Color.argb(255,0,0,0));
+        this.getWindow().setNavigationBarColor( Color.argb(255,0,0,0));
     }
 
 
@@ -145,11 +147,11 @@ public class WatchStreamingActivity extends AppCompatActivity implements Texture
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                SubscriberSingleton.subscriber.setObserver(null);
-                SubscriberSingleton.subscriber.closeSocket();
-                textureView.setVisibility(View.INVISIBLE);
-                streamProxy.stop();
-                finished.setVisibility(View.VISIBLE);
+            SubscriberSingleton.subscriber.setObserver(null);
+            SubscriberSingleton.subscriber.closeSocket();
+            textureView.setVisibility(View.INVISIBLE);
+            streamProxy.stop();
+            finished.setVisibility(View.VISIBLE);
             }
         });
 

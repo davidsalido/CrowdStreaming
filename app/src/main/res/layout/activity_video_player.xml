@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    tools:context=".ui.watchstreaming.WatchStreamingActivity">
+    tools:context=".ui.videoplayer.VideoPlayerActivity">
 
     <TextureView
-        android:id="@+id/texture"
+        android:id="@+id/videoplayer"
         android:layout_width="1920px"
         android:layout_height="1080px"
 
@@ -17,19 +17,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/finished"
-        android:layout_width="392dp"
-        android:layout_height="157dp"
-        android:gravity="center_vertical"
-        android:text="la retransmisión ha finalizado"
-        android:textAlignment="center"
-        android:textColor="#EF2020"
-        android:textSize="24sp"
-        android:visibility="invisible"
+    <SeekBar
+        android:id="@+id/seekBar"
+        style="@style/Widget.AppCompat.SeekBar"
+        android:layout_width="370dp"
+        android:layout_height="40dp"
+        android:progressTint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.856" />
+
+    <ImageView
+        android:id="@+id/play"
+        android:layout_width="86dp"
+        android:layout_height="77dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.97"
+        app:srcCompat="@android:drawable/ic_media_pause" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

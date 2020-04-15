@@ -63,7 +63,6 @@ public class Subscriber extends OwnDiscoverySessionCallback {
         else if(messageString.equals("connectionresponse")){
             setConnection(new SubscriberConnection(view.getConnectivityManager(),session, peerHandle));
             getConnection().connect(session, peerHandle);
-            System.out.println("ha llegado");
             view.saveFile();
             session.sendMessage(peerHandle,1,"startstreaming".getBytes());
         }
@@ -106,11 +105,9 @@ public class Subscriber extends OwnDiscoverySessionCallback {
         FileOutputStream fos = new FileOutputStream(archivo);
 
         while ((read = in.read(buffer)) > 0) {
-
             fos.write(buffer,0,read);
             totalRead += read;
         }
-
         observer.stopStreaming();
     }
 

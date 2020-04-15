@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.media.MediaRecorder;
 import android.net.ConnectivityManager;
@@ -39,6 +40,7 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
     public MyCameraView mPreview;
     private boolean streaming = false;
     private Thread streamingThread;
+    private Socket clientSocket;
 
     public static Camera getCameraInstance()
     {
@@ -65,8 +67,8 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
         final FrameLayout preview =  findViewById(R.id.camera);
         preview.addView(mPreview);
 
-
-
+        this.getWindow().setStatusBarColor(Color.argb(255,0,0,0));
+        this.getWindow().setNavigationBarColor( Color.argb(255,0,0,0));
     }
 
     public void startStreamingPublic(){
@@ -80,6 +82,14 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
                 } catch (InterruptedException e) {
 
                 }
+                finally {
+                    try {
+                        streaming = false;
+                        if(clientSocket != null && !clientSocket.isClosed()) clientSocket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
 
             }
         });
@@ -88,7 +98,7 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
 
 
     private void startStreaming() throws IOException, InterruptedException, SocketException {
-        Socket clientSocket = null;
+        clientSocket = null;
         OutputStream outs = null;
 
         ParcelFileDescriptor[] mParcelFileDescriptors = ParcelFileDescriptor.createReliablePipe();
@@ -118,6 +128,7 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
         mCamera.getParameters().setRotation(90);
         // Step 1: Unlock and set camera to MediaRecorder
         mCamera.unlock();
+
 
         mMediaRecorder.setCamera(mCamera);
 
@@ -165,9 +176,12 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
             public void onClick(View v) {
                 if(!streaming){
                     WifiAwareSession session = WifiAwareSessionUtillities.getSession();
+
                     publisher = new Publisher(StreamingActivity.this, getConnectivityManager());
                     session.publish(Publisher.CONFIGPUBL,publisher,null);
+
                     streaming = true;
+
                 }
                 else{
                     stopStreaming();
@@ -181,7 +195,7 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        stopStreaming();
+        if(streaming) stopStreaming();
     }
 
     @Override
