@@ -45,16 +45,6 @@ public class GalleryFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_gallery, container, false);
     }
 
-    private Bitmap rotateBitmap(Bitmap bitmap){
-        Matrix matrix = new Matrix();
-
-        matrix.postRotate(90);
-
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), true);
-
-        return Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
-    }
-
 
     @Override
     public void onResume() {
@@ -123,6 +113,17 @@ public class GalleryFragment extends Fragment {
         });
         t.start();
     }
+
+    private Bitmap rotateBitmap(Bitmap bitmap){
+        Matrix matrix = new Matrix();
+
+        matrix.postRotate(90);
+
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), true);
+
+        return Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+    }
+
 
     public void startVideo(int position){
         Intent intent = new Intent(getContext(), VideoPlayerActivity.class);

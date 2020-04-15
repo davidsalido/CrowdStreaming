@@ -6,9 +6,9 @@
     tools:context=".ui.gateway.GatewayFragment">
 
 
-    <WebView
-        android:id="@+id/webview"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/listGateway"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
+        android:layout_height="match_parent"
+        android:background="#FFFFFF" />
 </FrameLayout>
