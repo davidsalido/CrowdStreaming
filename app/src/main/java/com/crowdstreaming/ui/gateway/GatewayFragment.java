@@ -33,18 +33,7 @@ public class GatewayFragment extends Fragment {
         super.onResume();
 
 
-        webView = getActivity().findViewById(R.id.webview);
-        GenericWebViewClient webViewClient = new GenericWebViewClient();
 
-        webViewClient.setRequestCounterListener(new GenericWebViewClient.RequestCounterListener() {
-            @Override
-            public void countChanged(int requestCount) {
-                System.out.println("request count: " + requestCount);
-            }
-        });
-
-        webView.setWebViewClient(webViewClient);
-        webView.loadUrl("http://33y6fjyhs3phzfjj.onion");
 
     }
 }

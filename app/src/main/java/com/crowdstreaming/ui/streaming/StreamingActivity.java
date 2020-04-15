@@ -1,22 +1,28 @@
 package com.crowdstreaming.ui.streaming;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.media.MediaRecorder;
 import android.net.ConnectivityManager;
+import android.net.wifi.aware.WifiAwareManager;
 import android.net.wifi.aware.WifiAwareSession;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.crowdstreaming.R;
+import com.crowdstreaming.net.MyAttachCallback;
+import com.crowdstreaming.net.OwnIdentityChangedListener;
 import com.crowdstreaming.net.Publisher;
 import com.crowdstreaming.net.WifiAwareSessionUtillities;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -24,12 +30,17 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 public class StreamingActivity extends AppCompatActivity implements StreamingView{
@@ -38,9 +49,12 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
     private Publisher publisher;
     private Camera mCamera;
     public MyCameraView mPreview;
+    private MediaRecorder mMediaRecorder;
     private boolean streaming = false;
-    private Thread streamingThread;
-    private Socket clientSocket;
+    private Thread streamingThread, cameraThread;
+    private Socket  clientSocket;
+    private SharedPreferences preferences;
+    private DataOutputStream socketOutput;
 
     public static Camera getCameraInstance()
     {
@@ -61,6 +75,8 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
 
         initRecButton();
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
         mCamera = getCameraInstance();
         mCamera.setDisplayOrientation(90);
         mPreview = new MyCameraView(this, mCamera);
@@ -79,16 +95,9 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
                     startStreaming();
                 } catch (IOException e) {
                     System.out.println("Subscriber desconectado");
-                } catch (InterruptedException e) {
-
                 }
                 finally {
-                    try {
-                        streaming = false;
-                        if(clientSocket != null && !clientSocket.isClosed()) clientSocket.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+
                 }
 
             }
@@ -97,18 +106,26 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
     }
 
 
-    private void startStreaming() throws IOException, InterruptedException, SocketException {
+
+    private void startStreaming() throws IOException {
         clientSocket = null;
         OutputStream outs = null;
+
+        clientSocket = new Socket( publisher.getAddress() , publisher.getPort() );
+        outs = clientSocket.getOutputStream();
+        socketOutput = new DataOutputStream(outs);
+
+        publisher.callSubscriber();
+
+
+    }
+
+
+    private void startRecording() throws IOException {
 
         ParcelFileDescriptor[] mParcelFileDescriptors = ParcelFileDescriptor.createReliablePipe();
         ParcelFileDescriptor mParcelRead = new ParcelFileDescriptor(mParcelFileDescriptors[0]);
         ParcelFileDescriptor mParcelWrite = new ParcelFileDescriptor(mParcelFileDescriptors[1]);
-
-        clientSocket = new Socket( publisher.getAddress() , publisher.getPort() );
-        outs = clientSocket.getOutputStream();
-        DataOutputStream dos = new DataOutputStream(outs);
-
 
 
         int video_width = 1920;
@@ -123,7 +140,7 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
 
         // initialize recording hardware
 
-        MediaRecorder mMediaRecorder = new MediaRecorder();
+        mMediaRecorder = new MediaRecorder();
 
         mCamera.getParameters().setRotation(90);
         // Step 1: Unlock and set camera to MediaRecorder
@@ -150,23 +167,62 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
         mMediaRecorder.prepare();
         mMediaRecorder.start();
 
+
         InputStream in = new ParcelFileDescriptor.AutoCloseInputStream(mParcelRead);
 
         byte[] buffer = new byte[4096];
 
-        publisher.callSubscriber();
+        byte[] metadata = new byte[4096];
+
+        FileOutputStream fos = null;
+        System.out.println("Ajustes: " + preferences.getBoolean("guardar", false));
+        if(preferences.getBoolean("guardar", false)){
+            String path = createVideoFilePath();
+            File file = new File(path);
+            fos = new FileOutputStream(file);
+        }
 
         int count;
-        int totalSent = 0;
+        int totalRead = 0;
+        boolean metadataSent = false;
         while ((count = in.read(buffer))>0 && !Thread.interrupted()){
-            totalSent += count;
-            dos.write(buffer, 0, count);
+            if(socketOutput != null){
+                if(!metadataSent){
+                    socketOutput.write(metadata, 0, 4096);
+                    metadataSent = true;
+                }
+                socketOutput.write(buffer, 0, count);
+                System.out.println("escribiendo");
+            }
+            if(fos != null) fos.write(buffer, 0, count);
             System.out.println("escribiendo");
+            if(totalRead == 0){
+                metadata = Arrays.copyOf(buffer,4096);
+            }
+            totalRead++;
         }
     }
 
+    private String createVideoFilePath(){
+        String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+        String filename = sdf.format(cal.getTime());
+        filename = filename.replaceAll(" ", "_");
+        filename = filename.replaceAll(":", "-");
+        return getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) + "/" + filename + ".mp4";
+    }
+
     private void stopStreaming(){
-        streamingThread.interrupt();
+        cameraThread.interrupt();
+        streaming = false;
+        mMediaRecorder.release();
+        WifiAwareSessionUtillities.restart();
+        try {
+            if(clientSocket != null && !clientSocket.isClosed()) clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initRecButton(){
@@ -175,13 +231,24 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
             @Override
             public void onClick(View v) {
                 if(!streaming){
-                    WifiAwareSession session = WifiAwareSessionUtillities.getSession();
-
-                    publisher = new Publisher(StreamingActivity.this, getConnectivityManager());
-                    session.publish(Publisher.CONFIGPUBL,publisher,null);
 
                     streaming = true;
 
+                    cameraThread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                WifiAwareSession session = WifiAwareSessionUtillities.getSession();
+                                publisher = new Publisher(StreamingActivity.this, getConnectivityManager());
+                                session.publish(Publisher.CONFIGPUBL,publisher,null);
+
+                                startRecording();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    cameraThread.start();
                 }
                 else{
                     stopStreaming();

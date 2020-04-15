@@ -42,6 +42,12 @@ public class Subscriber extends OwnDiscoverySessionCallback {
     }
 
     @Override
+    public void onMessageSendFailed(@SuppressWarnings("unused") int messageId) {
+        super.onMessageSendFailed(messageId);
+        System.out.println("No ha llegado");
+    }
+
+    @Override
     public void onServiceDiscovered(PeerHandle peerHandle, byte[] serviceSpecificInfo, List<byte[]> matchFilter) {
         super.onServiceDiscovered(peerHandle,serviceSpecificInfo,matchFilter);
         this.setPeerHandle(peerHandle);
@@ -105,6 +111,9 @@ public class Subscriber extends OwnDiscoverySessionCallback {
         FileOutputStream fos = new FileOutputStream(archivo);
 
         while ((read = in.read(buffer)) > 0) {
+            if(totalRead == 0){
+                read = 1024;
+            }
             fos.write(buffer,0,read);
             totalRead += read;
         }

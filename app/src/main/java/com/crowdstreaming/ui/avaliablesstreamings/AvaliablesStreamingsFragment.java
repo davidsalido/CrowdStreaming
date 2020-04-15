@@ -56,11 +56,15 @@ public class AvaliablesStreamingsFragment extends Fragment implements Avaliables
         arrayAdapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, devices);
         streamingList.setAdapter(arrayAdapter);
         progressBar = getActivity().findViewById(R.id.progressBar);
+        streamingList.setVisibility(View.VISIBLE);
+
 
         WifiAwareSession session = WifiAwareSessionUtillities.getSession();
-        subscriber = new Subscriber(this);
+        subscriber = new Subscriber(AvaliablesStreamingsFragment.this);
         SubscriberSingleton.subscriber = subscriber;
         session.subscribe(Subscriber.CONFIGSUBS,subscriber,null);
+
+
 
         streamingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -75,13 +79,14 @@ public class AvaliablesStreamingsFragment extends Fragment implements Avaliables
 
     public void cambiarVista(){
         progressBar.setVisibility(View.INVISIBLE);
-        streamingList.setVisibility(View.VISIBLE);
+
 
         Intent intent = new Intent(getContext(), WatchStreamingActivity.class);
         intent.putExtra("path",videoFilePath);
-
-
         getActivity().startActivity(intent);
+
+        //streamingList.setVisibility(View.VISIBLE);
+
     }
 
     @Override
