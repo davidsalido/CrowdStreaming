@@ -2,6 +2,7 @@ package com.crowdstreaming.ui.avaliablesstreamings;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.wifi.aware.WifiAwareSession;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 
 import com.crowdstreaming.R;
 import com.crowdstreaming.net.Subscriber;
@@ -25,6 +27,7 @@ import com.crowdstreaming.net.WifiAwareSessionUtillities;
 import com.crowdstreaming.ui.watchstreaming.WatchStreamingActivity;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,6 +42,7 @@ public class AvaliablesStreamingsFragment extends Fragment implements Avaliables
     private Subscriber subscriber;
     private ProgressBar progressBar;
     private String videoFilePath;
+    private SharedPreferences preferences;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -57,7 +61,7 @@ public class AvaliablesStreamingsFragment extends Fragment implements Avaliables
         streamingList.setAdapter(arrayAdapter);
         progressBar = getActivity().findViewById(R.id.progressBar);
         streamingList.setVisibility(View.VISIBLE);
-
+        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
 
         WifiAwareSession session = WifiAwareSessionUtillities.getSession();
         subscriber = new Subscriber(AvaliablesStreamingsFragment.this);
@@ -95,8 +99,18 @@ public class AvaliablesStreamingsFragment extends Fragment implements Avaliables
             @Override
             public void run() {
                 try {
-                    videoFilePath = createVideoFilePath();
-                    subscriber.saveFile(new File(videoFilePath));
+                    File file = null;
+                    if(preferences.getBoolean("guardar", false)){
+                        videoFilePath = createVideoFilePath();
+                        file = new File(videoFilePath);
+                    }
+                    else{
+                        file = File.createTempFile("tempvideo",".mp4", getContext().getCacheDir());
+                        videoFilePath = file.getAbsolutePath();
+                        System.out.println("Path nuestro: " + videoFilePath);
+                        file.deleteOnExit();
+                    }
+                    subscriber.saveFile(file);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

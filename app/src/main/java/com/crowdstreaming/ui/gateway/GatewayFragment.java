@@ -99,7 +99,7 @@ public class GatewayFragment extends Fragment {
     }
 
     public void openUrl(String url){
-        Uri uri = Uri.parse("http://" + url); 
+        Uri uri = Uri.parse("http://" + url);
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);
     }
