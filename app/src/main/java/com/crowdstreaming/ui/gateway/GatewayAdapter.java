@@ -1,4 +1,4 @@
-package com.crowdstreaming.ui.gallery;
+package com.crowdstreaming.ui.gateway;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,16 +10,17 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.crowdstreaming.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder>{
+public class GatewayAdapter extends RecyclerView.Adapter<GatewayAdapter.ViewHolder>{
 
-    private ArrayList<GalleryListData> listdata;
-    private GalleryFragment fragment;
+    private ArrayList<GatewayListData> listdata;
+    private GatewayFragment fragment;
 
     // RecyclerView recyclerView;
-    public GalleryAdapter(ArrayList<GalleryListData> listdata, GalleryFragment fragment) {
+    public GatewayAdapter(ArrayList<GatewayListData> listdata, GatewayFragment fragment) {
         this.listdata = listdata;
         this.fragment = fragment;
     }
@@ -27,7 +28,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View listItem= layoutInflater.inflate(R.layout.list_item, parent, false);
+        View listItem= layoutInflater.inflate(R.layout.list_item_gateway, parent, false);
         ViewHolder viewHolder = new ViewHolder(listItem);
 
 
@@ -36,13 +37,15 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        final GalleryListData myListData = listdata.get(position);
-        holder.textView.setText(listdata.get(position).getPath());
-        holder.imageView.setImageBitmap(listdata.get(position).getThumbail());
+        final GatewayListData myListData = listdata.get(position);
+
+        holder.textView.setText(listdata.get(position).getTitle());
+        Picasso.get().load(myListData.getLogoUrl()).into(holder.imageView);
+
         holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fragment.startVideo(position);
+                fragment.openUrl(myListData.getOnionUrl());
             }
         });
     }
@@ -60,9 +63,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
         private ViewHolder(View itemView) {
             super(itemView);
-            this.imageView = itemView.findViewById(R.id.imageGallery);
-            this.textView = itemView.findViewById(R.id.titlegallery);
-            constraintLayout = itemView.findViewById(R.id.galleryconstraint);
+            this.imageView = itemView.findViewById(R.id.imageView);
+            this.textView = itemView.findViewById(R.id.titlegateway);
+            constraintLayout = itemView.findViewById(R.id.gatewayconstraint);
         }
     }
 }

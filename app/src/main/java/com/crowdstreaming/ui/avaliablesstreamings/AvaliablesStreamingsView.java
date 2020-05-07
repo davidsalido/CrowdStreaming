@@ -6,7 +6,7 @@ import java.io.File;
 
 public interface AvaliablesStreamingsView {
 
-    public void addDevice(String device);
+    public void addDevice(String device, String mac);
 
     public ConnectivityManager getConnectivityManager();
 

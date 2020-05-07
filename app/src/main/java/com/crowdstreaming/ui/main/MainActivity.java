@@ -1,5 +1,6 @@
 package com.crowdstreaming.ui.main;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,14 +13,17 @@ import android.view.Menu;
 import android.widget.Toast;
 
 import com.crowdstreaming.R;
-import com.crowdstreaming.net.Attached;
+import com.crowdstreaming.net.MyAttachCallback;
 import com.crowdstreaming.net.OwnIdentityChangedListener;
+import com.crowdstreaming.net.WifiAwareSessionUtillities;
 import com.crowdstreaming.ui.SettingsActivity;
 import com.crowdstreaming.ui.streaming.StreamingActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -32,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     private AppBarConfiguration mAppBarConfiguration;
     private View settings;
-    private FloatingActionButton cameraButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         setSupportActionBar(toolbar);
 
 
-        cameraButton = findViewById(R.id.fab);
+        FloatingActionButton cameraButton = findViewById(R.id.fab);
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -54,11 +57,53 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         createFragments();
 
+        pedirPermisos();
+
         checkWifiAwareAvaliability();
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            initWifiAware();
+        }
+
+
+    }
+
+    private void initWifiAware(){
         WifiAwareManager wifiAwareManager = (WifiAwareManager) getContext().getSystemService(Context.WIFI_AWARE_SERVICE);
-        Attached attached = new Attached(this);
-        wifiAwareManager.attach(attached, new OwnIdentityChangedListener(),new Handler());
+        WifiAwareSessionUtillities.setManager(wifiAwareManager);
+        WifiAwareSessionUtillities.createSession();
+    }
+
+    private void pedirPermisos(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 0);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 3);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 4);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        // If request is cancelled, the result arrays are empty.
+        if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(getApplicationContext(),"No has dado los permisos necesarios", Toast.LENGTH_LONG).show();
+        }
+        else{
+            if(requestCode == 1)
+                initWifiAware();
+        }
+
     }
 
     private void checkWifiAwareAvaliability(){

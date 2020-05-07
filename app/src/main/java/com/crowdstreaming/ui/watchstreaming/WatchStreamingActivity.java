@@ -71,11 +71,9 @@ public class WatchStreamingActivity extends AppCompatActivity implements Texture
         ArrayList<String> options = new ArrayList<String>();
         options.add("--aout=opensles"); // time stretching
         options.add("-vvv"); // verbosity
-        options.add("--aout=opensles");
         options.add("--avcodec-codec=h264");
         options.add("--file-logging");
         options.add("--logfile=vlc-log.txt");
-        options.add("--video-filter=rotate {angle=90}");
 
 
         libvlc = new LibVLC(getApplicationContext(), options);

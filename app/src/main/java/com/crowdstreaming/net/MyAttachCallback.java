@@ -5,21 +5,21 @@ import android.net.wifi.aware.WifiAwareSession;
 
 import com.crowdstreaming.ui.main.MainView;
 
-public class Attached extends AttachCallback {
+public class MyAttachCallback extends AttachCallback {
 
-    private MainView view;
 
-    public Attached(MainView view){
-        this.view = view;
+    public MyAttachCallback(){
+
     }
 
     @Override
     public void onAttached(WifiAwareSession session) {
+        System.out.println("Jeje ha funcado");
         WifiAwareSessionUtillities.setSession(session);
     }
 
     @Override
     public void onAttachFailed() {
-        view.showError("Ha habido un error, reinicia la aplicación");
+        System.out.println("Ha habido un error, reinicia la aplicación");
     }
 }

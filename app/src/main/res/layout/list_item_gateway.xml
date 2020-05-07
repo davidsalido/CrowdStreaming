@@ -2,33 +2,30 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/galleryconstraint"
-
+    android:id="@+id/gatewayconstraint"
     android:layout_width="match_parent"
-    android:layout_height="360dp">
+    android:layout_height="120dp">
 
     <ImageView
-        android:id="@+id/imageGallery"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="8dp"
+        android:id="@+id/imageView"
+        android:layout_width="99dp"
+        android:layout_height="94dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.13999999"
         app:srcCompat="@drawable/side_nav_bar" />
 
     <TextView
-        android:id="@+id/titlegallery"
-        android:layout_width="261dp"
-        android:layout_height="37dp"
+        android:id="@+id/titlegateway"
+        android:layout_width="240dp"
+        android:layout_height="39dp"
         android:gravity="center"
         android:text="TextView"
-        android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.893"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.90999997" />
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

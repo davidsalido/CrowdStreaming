@@ -1,5 +1,6 @@
 package com.crowdstreaming.ui.streaming;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
 import com.crowdstreaming.R;
+import com.crowdstreaming.ui.main.MainActivity;
 
 public class StreamingFragment extends Fragment {
 
@@ -29,7 +31,6 @@ public class StreamingFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
 
     }
 

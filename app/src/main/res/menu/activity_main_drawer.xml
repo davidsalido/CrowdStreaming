@@ -9,10 +9,6 @@
             android:icon="@android:drawable/ic_dialog_info"
             android:title="@string/menu_home" />
         <item
-            android:id="@+id/nav_streaming"
-            android:icon="@android:drawable/presence_video_away"
-            android:title="@string/menu_streaming" />
-        <item
             android:id="@+id/nav_avaliables"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="@string/menu_avaliables" />
