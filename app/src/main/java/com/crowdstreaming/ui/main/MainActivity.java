@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     private AppBarConfiguration mAppBarConfiguration;
     private View settings;
-    private FloatingActionButton cameraButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         setSupportActionBar(toolbar);
 
 
-        cameraButton = findViewById(R.id.fab);
+        FloatingActionButton cameraButton = findViewById(R.id.fab);
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -98,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         // If request is cancelled, the result arrays are empty.
         if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(getApplicationContext(),"Da los permisos anormal", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"No has dado los permisos necesarios", Toast.LENGTH_LONG).show();
         }
         else{
             if(requestCode == 1)

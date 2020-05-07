@@ -1,7 +1,5 @@
 package com.crowdstreaming.ui.gateway;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +10,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.crowdstreaming.R;
-import com.crowdstreaming.ui.gallery.GalleryFragment;
-import com.crowdstreaming.ui.gallery.GalleryListData;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -68,8 +64,8 @@ public class GatewayAdapter extends RecyclerView.Adapter<GatewayAdapter.ViewHold
         private ViewHolder(View itemView) {
             super(itemView);
             this.imageView = itemView.findViewById(R.id.imageView);
-            this.textView = itemView.findViewById(R.id.textView2);
-            constraintLayout = itemView.findViewById(R.id.constraint);
+            this.textView = itemView.findViewById(R.id.titlegateway);
+            constraintLayout = itemView.findViewById(R.id.gatewayconstraint);
         }
     }
 }

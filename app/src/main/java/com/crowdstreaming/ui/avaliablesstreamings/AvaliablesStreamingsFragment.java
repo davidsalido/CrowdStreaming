@@ -15,10 +15,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.crowdstreaming.R;
 import com.crowdstreaming.net.Subscriber;
@@ -36,13 +39,14 @@ import java.util.List;
 
 public class AvaliablesStreamingsFragment extends Fragment implements AvaliablesStreamingsView {
 
-    private ListView streamingList;
-    private List<String> devices;
-    private ArrayAdapter arrayAdapter;
+    private RecyclerView streamingList;
+    private ArrayList<AvaliablesStreamingListData> devices;
+    private AvaliablesStreamingAdapter adapter;
     private Subscriber subscriber;
     private ProgressBar progressBar;
     private String videoFilePath;
     private SharedPreferences preferences;
+    private TextView noDevicesFound;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -56,29 +60,33 @@ public class AvaliablesStreamingsFragment extends Fragment implements Avaliables
         super.onResume();
 
         devices = new ArrayList<>();
+
         streamingList = getActivity().findViewById(R.id.streaminglist);
-        arrayAdapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, devices);
-        streamingList.setAdapter(arrayAdapter);
+
+        adapter = new AvaliablesStreamingAdapter(devices,this);
+        streamingList.setHasFixedSize(true);
+        streamingList.setLayoutManager(new GridLayoutManager(getContext(), 1 ,GridLayoutManager.VERTICAL,false));
+        streamingList.setAdapter(adapter);
+
+
+
         progressBar = getActivity().findViewById(R.id.progressBar);
         streamingList.setVisibility(View.VISIBLE);
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+        noDevicesFound = getActivity().findViewById(R.id.nodevice);
 
         WifiAwareSession session = WifiAwareSessionUtillities.getSession();
         subscriber = new Subscriber(AvaliablesStreamingsFragment.this);
-        SubscriberSingleton.subscriber = subscriber;
+
         session.subscribe(Subscriber.CONFIGSUBS,subscriber,null);
+        SubscriberSingleton.subscriber = subscriber;
 
+    }
 
-
-        streamingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                streamingList.setVisibility(View.INVISIBLE);
-                progressBar.setVisibility(View.VISIBLE);
-                subscriber.realizaConexion();
-
-            }
-        });
+    public void pulsarDevice(){
+        streamingList.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+        subscriber.realizaConexion();
     }
 
     public void cambiarVista(){
@@ -130,9 +138,11 @@ public class AvaliablesStreamingsFragment extends Fragment implements Avaliables
     }
 
     @Override
-    public void addDevice(String device) {
-        devices.add(device);
-        arrayAdapter.notifyDataSetChanged();
+    public void addDevice(String device, String mac) {
+        System.out.println(device + " " + mac);
+        devices.add(new AvaliablesStreamingListData(device,mac));
+        noDevicesFound.setVisibility(View.INVISIBLE);
+        adapter.notifyDataSetChanged();
     }
 
     @Override

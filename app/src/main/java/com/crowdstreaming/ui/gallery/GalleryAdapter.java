@@ -1,19 +1,15 @@
 package com.crowdstreaming.ui.gallery;
 
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.crowdstreaming.R;
-import com.crowdstreaming.ui.watchstreaming.WatchStreamingActivity;
 
 import java.util.ArrayList;
 
@@ -64,9 +60,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
         private ViewHolder(View itemView) {
             super(itemView);
-            this.imageView = itemView.findViewById(R.id.imageView);
-            this.textView = itemView.findViewById(R.id.textView2);
-            constraintLayout = itemView.findViewById(R.id.constraint);
+            this.imageView = itemView.findViewById(R.id.imageGallery);
+            this.textView = itemView.findViewById(R.id.titlegallery);
+            constraintLayout = itemView.findViewById(R.id.galleryconstraint);
         }
     }
 }

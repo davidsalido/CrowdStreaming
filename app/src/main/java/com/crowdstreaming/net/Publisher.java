@@ -39,7 +39,7 @@ public class Publisher extends OwnDiscoverySessionCallback {
     public void onPublishStarted(PublishDiscoverySession session) {
         super.onPublishStarted(session);
         this.session = session;
-        view.showMessage("Sesión publisher creada");
+        //view.showMessage("Sesión publisher creada");
     }
 
     @Override

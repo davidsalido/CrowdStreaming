@@ -64,7 +64,7 @@ public class Subscriber extends OwnDiscoverySessionCallback {
 
         if(messageString.contains("identifyresponse")){
             String [] s = messageString.split(";");
-            view.addDevice(s[2] + " - " + s[1]);
+            view.addDevice(s[2] , s[1]);
         }
         else if(messageString.equals("connectionresponse")){
             setConnection(new SubscriberConnection(view.getConnectivityManager(),session, peerHandle));

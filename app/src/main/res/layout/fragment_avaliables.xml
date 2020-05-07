@@ -6,6 +6,30 @@
     android:layout_height="match_parent"
     tools:context=".ui.avaliablesstreamings.AvaliablesStreamingsFragment">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/streaminglist"
+        android:layout_width="409dp"
+        android:layout_height="729dp"
+        android:background="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/nodevice"
+        android:layout_width="319dp"
+        android:layout_height="131dp"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:text="Buscando retransmisiones cercanas..."
+        app:layout_constraintBottom_toBottomOf="@+id/streaminglist"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyle"
@@ -17,14 +41,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ListView
-        android:id="@+id/streaminglist"
-        android:layout_width="409dp"
-        android:layout_height="729dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
-
-    </ListView>
 </androidx.constraintlayout.widget.ConstraintLayout>

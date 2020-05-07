@@ -6,6 +6,7 @@ import androidx.preference.PreferenceManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.media.MediaRecorder;
@@ -48,7 +49,7 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
     private FloatingActionButton recButton;
     private Publisher publisher;
     private Camera mCamera;
-    public MyCameraView mPreview;
+    private MyCameraView mPreview;
     private MediaRecorder mMediaRecorder;
     private boolean streaming = false;
     private Thread streamingThread, cameraThread;
@@ -231,21 +232,20 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
             @Override
             public void onClick(View v) {
                 if(!streaming){
-
                     streaming = true;
-
+                    recButton.setImageResource(R.drawable.square);
                     cameraThread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            try {
-                                WifiAwareSession session = WifiAwareSessionUtillities.getSession();
-                                publisher = new Publisher(StreamingActivity.this, getConnectivityManager());
-                                session.publish(Publisher.CONFIGPUBL,publisher,null);
+                        try {
+                            WifiAwareSession session = WifiAwareSessionUtillities.getSession();
+                            publisher = new Publisher(StreamingActivity.this, getConnectivityManager());
+                            session.publish(Publisher.CONFIGPUBL,publisher,null);
 
-                                startRecording();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                            startRecording();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         }
                     });
                     cameraThread.start();
@@ -253,6 +253,7 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
                 else{
                     stopStreaming();
                     streaming = false;
+                    recButton.setImageResource(R.drawable.videocam);
                 }
 
             }

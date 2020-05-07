@@ -2,7 +2,7 @@
     <string name="app_name">CrowdStreaming</string>
     <string name="action_settings">Ajustes</string>
 
-    <string name="menu_home">Quienes somos</string>
+    <string name="menu_home">Instrucciones</string>
     <string name="menu_streaming">Retransmitir</string>
     <string name="menu_avaliables">Streaming disponibles</string>
     <string name="menu_gallery">Galeria</string>
