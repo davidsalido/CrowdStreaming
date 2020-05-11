@@ -6,15 +6,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.wifi.aware.WifiAwareManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.widget.Toast;
 
 import com.crowdstreaming.R;
-import com.crowdstreaming.net.MyAttachCallback;
-import com.crowdstreaming.net.OwnIdentityChangedListener;
 import com.crowdstreaming.net.WifiAwareSessionUtillities;
 import com.crowdstreaming.ui.SettingsActivity;
 import com.crowdstreaming.ui.streaming.StreamingActivity;
