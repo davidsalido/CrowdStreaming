@@ -1,5 +1,6 @@
 package com.crowdstreaming.net;
 
+import android.icu.util.Output;
 import android.net.ConnectivityManager;
 import android.net.wifi.aware.PeerHandle;
 import android.net.wifi.aware.SubscribeConfig;
@@ -15,6 +16,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -64,7 +66,7 @@ public class Subscriber extends OwnDiscoverySessionCallback {
 
         if(messageString.contains("identifyresponse")){
             String [] s = messageString.split(";");
-            view.addDevice(s[2] , s[1]);
+            view.addDevice(s[2] , s[1], peerHandle);
         }
         else if(messageString.equals("connectionresponse")){
             setConnection(new SubscriberConnection(view.getConnectivityManager(),session, peerHandle));
@@ -76,6 +78,7 @@ public class Subscriber extends OwnDiscoverySessionCallback {
             setPortToUse(Integer.parseInt(messageString.split(":")[1]));
         }
         else if(messageString.contains("streamingstarted")){
+            System.out.println("Vista cambiar");
             view.cambiarVista();
         }
         else {
@@ -88,8 +91,8 @@ public class Subscriber extends OwnDiscoverySessionCallback {
         this.observer = observer;
     }
 
-    public void realizaConexion(){
-        session.sendMessage(getPeerHandle(),1,"connectionrequest".getBytes());
+    public void realizaConexion(PeerHandle peerHandle){
+        session.sendMessage(peerHandle,1,"connectionrequest".getBytes());
     }
 
 
@@ -97,6 +100,7 @@ public class Subscriber extends OwnDiscoverySessionCallback {
         return super.getConnection();
     }
 
+    private OutputStream nodoTransito;
 
     public void saveFile(File archivo) throws IOException {
         ServerSocket serverSocket = getConnection().getServerSocket();
@@ -105,6 +109,7 @@ public class Subscriber extends OwnDiscoverySessionCallback {
 
         DataInputStream in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
 
+        byte[] metadata = new byte[1024];
         byte[] buffer = new byte[4096];
         int read;
         int totalRead = 0;
@@ -112,12 +117,26 @@ public class Subscriber extends OwnDiscoverySessionCallback {
 
         while ((read = in.read(buffer)) > 0) {
             if(totalRead == 0){
-                read = 1024;
+                read = 4096;
+                metadata = buffer.clone();
+            }
+            if(nodoTransito != null){
+                if(metadata != null){
+                    nodoTransito.write(metadata,0,4096);
+                    metadata = null;
+                }
+                System.out.println("Mandando");
+                nodoTransito.write(buffer,0,read);
             }
             fos.write(buffer,0,read);
             totalRead += read;
         }
-        observer.stopStreaming();
+        if(observer != null)
+            observer.stopStreaming();
+    }
+
+    public void setNodoTransito(OutputStream nodoTransito){
+        this.nodoTransito = nodoTransito;
     }
 
     public void closeSocket(){

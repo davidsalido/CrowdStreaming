@@ -1,5 +1,6 @@
 package com.crowdstreaming.ui.avaliablesstreamings;
 
+import android.net.wifi.aware.PeerHandle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,7 @@ public class AvaliablesStreamingAdapter extends RecyclerView.Adapter<AvaliablesS
         holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fragment.pulsarDevice();
+                fragment.pulsarDevice(myListData.getPeerHandle());
             }
         });
     }

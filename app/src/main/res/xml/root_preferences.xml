@@ -4,6 +4,9 @@
 
         <SwitchPreferenceCompat
             app:key="compartir"
+            app:title="Compartir retransmisión automáticamente" />
+        <SwitchPreferenceCompat
+            app:key="compartirVer"
             app:title="Compartir retransmisión" />
         <SwitchPreferenceCompat
             app:key="guardar"

@@ -6,24 +6,18 @@ import androidx.preference.PreferenceManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.media.MediaRecorder;
 import android.net.ConnectivityManager;
-import android.net.wifi.aware.WifiAwareManager;
 import android.net.wifi.aware.WifiAwareSession;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.crowdstreaming.R;
-import com.crowdstreaming.net.MyAttachCallback;
-import com.crowdstreaming.net.OwnIdentityChangedListener;
 import com.crowdstreaming.net.Publisher;
 import com.crowdstreaming.net.WifiAwareSessionUtillities;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -34,15 +28,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class StreamingActivity extends AppCompatActivity implements StreamingView{
 
@@ -55,7 +50,7 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
     private Thread streamingThread, cameraThread;
     private Socket  clientSocket;
     private SharedPreferences preferences;
-    private DataOutputStream socketOutput;
+    private volatile List<Pair> socketOutputs;
 
     public static Camera getCameraInstance()
     {
@@ -84,6 +79,8 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
         final FrameLayout preview =  findViewById(R.id.camera);
         preview.addView(mPreview);
 
+        socketOutputs = new ArrayList<>();
+
         this.getWindow().setStatusBarColor(Color.argb(255,0,0,0));
         this.getWindow().setNavigationBarColor( Color.argb(255,0,0,0));
     }
@@ -92,15 +89,11 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
         streamingThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    startStreaming();
-                } catch (IOException e) {
-                    System.out.println("Subscriber desconectado");
-                }
-                finally {
-
-                }
-
+            try {
+                startStreaming();
+            } catch (IOException e) {
+                System.out.println("Subscriber desconectado");
+            }
             }
         });
         streamingThread.start();
@@ -114,7 +107,8 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
 
         clientSocket = new Socket( publisher.getAddress() , publisher.getPort() );
         outs = clientSocket.getOutputStream();
-        socketOutput = new DataOutputStream(outs);
+        DataOutputStream outputStream = new DataOutputStream(outs);
+        socketOutputs.add(new Pair(outputStream,false));
 
         publisher.callSubscriber();
 
@@ -173,7 +167,8 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
 
         byte[] buffer = new byte[4096];
 
-        byte[] metadata = new byte[4096];
+        //Metadatos de los videos guardados en MPEG_2
+        byte[] metadata = hexStringToByteArray("474000110000B00D0000C300000001E1E0E85F74ECFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
 
         FileOutputStream fos = null;
         System.out.println("Ajustes: " + preferences.getBoolean("guardar", false));
@@ -185,18 +180,22 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
 
         int count;
         int totalRead = 0;
-        boolean metadataSent = false;
         while ((count = in.read(buffer))>0 && !Thread.interrupted()){
-            if(socketOutput != null){
-                if(!metadataSent){
-                    socketOutput.write(metadata, 0, 4096);
-                    metadataSent = true;
+            if(!socketOutputs.isEmpty()){
+                for(Pair pair:socketOutputs) {
+                    if (!pair.metadataSent) {
+                        System.out.println("Metadata mandados");
+                        pair.socketOutput.write(metadata, 0, metadata.length);
+                        pair.metadataSent = true;
+                    }
+                    else{
+                        pair.socketOutput.write(buffer, 0, count);
+                        //System.out.println("Enviando a " + pair.socketOutput);
+                    }
+
                 }
-                socketOutput.write(buffer, 0, count);
-                System.out.println("escribiendo");
             }
             if(fos != null) fos.write(buffer, 0, count);
-            System.out.println("escribiendo");
             if(totalRead == 0){
                 metadata = Arrays.copyOf(buffer,4096);
             }
@@ -266,13 +265,46 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
         if(streaming) stopStreaming();
     }
 
-    @Override
-    public void showMessage(String msg) {
-        Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_LONG).setAction("Action", null).show();
-    }
 
-    @Override
     public ConnectivityManager getConnectivityManager() {
         return (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+    }
+
+    private class Pair{
+
+        private DataOutputStream socketOutput;
+        private Boolean metadataSent;
+
+        public Pair(DataOutputStream socketOutput, Boolean metadataSent){
+            this.socketOutput = socketOutput;
+            this.metadataSent = metadataSent;
+        }
+
+
+        public DataOutputStream getSocketOutput() {
+            return socketOutput;
+        }
+
+        public void setSocketOutput(DataOutputStream socketOutput) {
+            this.socketOutput = socketOutput;
+        }
+
+        public Boolean getMetadataSent() {
+            return metadataSent;
+        }
+
+        public void setMetadataSent(Boolean metadataSent) {
+            this.metadataSent = metadataSent;
+        }
+    }
+
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i+1), 16));
+        }
+        return data;
     }
 }

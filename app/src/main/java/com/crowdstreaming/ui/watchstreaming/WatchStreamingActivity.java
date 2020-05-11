@@ -1,11 +1,16 @@
 package com.crowdstreaming.ui.watchstreaming;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.SurfaceTexture;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.net.wifi.aware.WifiAwareSession;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.TextureView;
@@ -14,18 +19,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crowdstreaming.R;
+import com.crowdstreaming.net.Publisher;
 import com.crowdstreaming.net.Subscriber;
 import com.crowdstreaming.net.SubscriberSingleton;
+import com.crowdstreaming.net.WifiAwareSessionUtillities;
 import com.crowdstreaming.ui.avaliablesstreamings.AvaliablesStreamingsFragment;
+import com.crowdstreaming.ui.streaming.StreamingView;
 
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 
-public class WatchStreamingActivity extends AppCompatActivity implements TextureView.SurfaceTextureListener, MediaPlayer.EventListener, IVLCVout.Callback, SubscriberObserver {
+public class WatchStreamingActivity extends AppCompatActivity implements TextureView.SurfaceTextureListener, MediaPlayer.EventListener, IVLCVout.Callback, SubscriberObserver, StreamingView {
 
     private TextureView textureView;
 
@@ -36,6 +47,14 @@ public class WatchStreamingActivity extends AppCompatActivity implements Texture
     private TextView finished;
     private StreamProxy streamProxy;
 
+    private Subscriber subscriber;
+    private Publisher publisher;
+
+    private Socket clientSocket;
+    private OutputStream socketOutput;
+
+    private SharedPreferences preferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +62,12 @@ public class WatchStreamingActivity extends AppCompatActivity implements Texture
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         videoFilePath = getIntent().getExtras().getString("path");
-        SubscriberSingleton.subscriber.setObserver(this);
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
+
+        subscriber = SubscriberSingleton.subscriber;
+        subscriber.setObserver(this);
+
         finished = findViewById(R.id.finished);
 
         textureView = findViewById(R.id.texture);
@@ -101,6 +125,12 @@ public class WatchStreamingActivity extends AppCompatActivity implements Texture
         mMediaPlayer.play();
 
         textureView.setRotation(90);
+
+        if(preferences.getBoolean("compartirVer", false)){
+            WifiAwareSession session = WifiAwareSessionUtillities.getSession();
+            publisher = new Publisher(WatchStreamingActivity.this, getConnectivityManager());
+            session.publish(Publisher.CONFIGPUBL,publisher,null);
+        }
     }
 
 
@@ -159,5 +189,32 @@ public class WatchStreamingActivity extends AppCompatActivity implements Texture
     public void onBackPressed(){
         super.onBackPressed();
         streamProxy.stop();
+    }
+
+
+    public ConnectivityManager getConnectivityManager() {
+        return (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+    }
+
+    @Override
+    public void startStreamingPublic() {
+        clientSocket = null;
+
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    clientSocket = new Socket( publisher.getAddress() , publisher.getPort() );
+                    socketOutput = clientSocket.getOutputStream();
+                    subscriber.setNodoTransito(socketOutput);
+                    publisher.callSubscriber();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        });
+        t.start();
     }
 }

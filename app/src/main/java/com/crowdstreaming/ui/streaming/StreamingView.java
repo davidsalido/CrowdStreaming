@@ -4,10 +4,6 @@ import android.net.ConnectivityManager;
 
 public interface StreamingView {
 
-    public void showMessage(String msg);
-
-    public ConnectivityManager getConnectivityManager();
-
     public void startStreamingPublic();
 
 }
