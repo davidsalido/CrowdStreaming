@@ -109,7 +109,7 @@ public class Subscriber extends OwnDiscoverySessionCallback {
 
         DataInputStream in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
 
-        byte[] metadata = new byte[1024];
+        byte[] metadata = new byte[4096];
         byte[] buffer = new byte[4096];
         int read;
         int totalRead = 0;
