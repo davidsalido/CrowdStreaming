@@ -15,5 +15,17 @@ CrowdStreaming is licensed under the [MIT License](https://github.com/davidsalid
 ## Usage example
 
 <p align="center">
-  <img src="device_to_device.gif" width="80%">
+  <img src="gifs/device_to_device.gif" width="80%">
+</p>
+
+<p align="center">
+  <img src="gifs/publisher_completo.gif" width="80%">
+</p>
+
+<p align="center">
+  <img src="gifs/nodo_transito.gif" width="80%">
+</p>
+
+<p align="center">
+  <img src="gifs/nodo_transito_oculto.gif" width="80%">
 </p>
