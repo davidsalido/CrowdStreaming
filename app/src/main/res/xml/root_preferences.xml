@@ -2,6 +2,10 @@
 
     <PreferenceCategory app:title="Preferencias">
 
+
+        <SwitchPreferenceCompat
+            app:key="repetidor"
+            app:title="Modo repetidor" />
         <SwitchPreferenceCompat
             app:key="compartir"
             app:title="Compartir retransmisión automáticamente" />

@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +28,7 @@ import com.crowdstreaming.net.SubscriberSingleton;
 import com.crowdstreaming.net.WifiAwareSessionUtillities;
 import com.crowdstreaming.ui.streaming.StreamingActivity;
 import com.crowdstreaming.ui.streaming.StreamingView;
+import com.crowdstreaming.ui.watchstreaming.SubscriberObserver;
 import com.crowdstreaming.ui.watchstreaming.WatchStreamingActivity;
 
 import java.io.DataOutputStream;
@@ -39,10 +41,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class AvaliablesStreamingsFragment extends Fragment implements AvaliablesStreamingsView, StreamingView {
+public class AvaliablesStreamingsFragment extends Fragment implements AvaliablesStreamingsView, StreamingView, SubscriberObserver {
 
     private RecyclerView streamingList;
     private ArrayList<AvaliablesStreamingListData> devices;
+    private PeerHandle currentDevice;
     private AvaliablesStreamingAdapter adapter;
     private Subscriber subscriber;
     private ProgressBar progressBar;
@@ -52,6 +55,7 @@ public class AvaliablesStreamingsFragment extends Fragment implements Avaliables
     private Publisher publisher;
     private Socket clientSocket;
     private OutputStream socketOutput;
+    private boolean streaming;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -89,14 +93,16 @@ public class AvaliablesStreamingsFragment extends Fragment implements Avaliables
     }
 
     public void pulsarDevice(PeerHandle peerHandle){
-        if(preferences.getBoolean("compartir", false)){
+        if(preferences.getBoolean("compartir", false) || preferences.getBoolean("repetidor", false)){
             subscriber.realizaConexion(peerHandle);
+            subscriber.setObserver(this);
             WifiAwareSession session = WifiAwareSessionUtillities.getSession();
             publisher = new Publisher(AvaliablesStreamingsFragment.this, getConnectivityManager());
             session.publish(Publisher.CONFIGPUBL,publisher,null);
             streamingList.setVisibility(View.INVISIBLE);
             noDevicesFound.setVisibility(View.VISIBLE);
             noDevicesFound.setText("Retransmitiendo automáticamente");
+            currentDevice = peerHandle;
         }
         else{
             streamingList.setVisibility(View.INVISIBLE);
@@ -108,7 +114,7 @@ public class AvaliablesStreamingsFragment extends Fragment implements Avaliables
 
     public void cambiarVista(){
 
-        if(!preferences.getBoolean("compartir", false)) {
+        if(!preferences.getBoolean("compartir", false) && !preferences.getBoolean("repetidor", false)) {
             progressBar.setVisibility(View.INVISIBLE);
             Intent intent = new Intent(getContext(), WatchStreamingActivity.class);
             intent.putExtra("path", videoFilePath);
@@ -157,10 +163,16 @@ public class AvaliablesStreamingsFragment extends Fragment implements Avaliables
 
     @Override
     public void addDevice(String device, String mac, PeerHandle peerHandle) {
-        System.out.println(device + " " + mac);
-        devices.add(new AvaliablesStreamingListData(device,mac,peerHandle));
-        noDevicesFound.setVisibility(View.INVISIBLE);
-        adapter.notifyDataSetChanged();
+        if(preferences.getBoolean("repetidor", false) && !streaming){
+            pulsarDevice(peerHandle);
+            streaming = true;
+        }
+        else{
+            devices.add(new AvaliablesStreamingListData(device,mac,peerHandle));
+            if(!noDevicesFound.getText().toString().equals("Retransmitiendo automáticamente"))
+                noDevicesFound.setVisibility(View.INVISIBLE);
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -191,5 +203,33 @@ public class AvaliablesStreamingsFragment extends Fragment implements Avaliables
         t.start();
 
 
+    }
+
+    @Override
+    public void stopStreaming() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(preferences.getBoolean("repetidor", false)){
+                    streaming = false;
+                    if(!devices.isEmpty())
+                        pulsarDevice(devices.get(0).getPeerHandle());
+                }
+                else{
+                    for(AvaliablesStreamingListData device: devices){
+                        if(device.getPeerHandle().equals(currentDevice))
+                            devices.remove(device);
+                    }
+                    currentDevice = null;
+                    if(!devices.isEmpty()){
+                        streamingList.setVisibility(View.VISIBLE);
+                    }
+                    else{
+                        noDevicesFound.setVisibility(View.VISIBLE);
+                        noDevicesFound.setText("Buscando retransmisiones cercanas...");
+                    }
+                }
+            }
+        });
     }
 }
