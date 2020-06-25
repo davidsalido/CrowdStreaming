@@ -1,25 +1,15 @@
 package com.crowdstreaming.net.connection;
 
-import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
-import android.net.LinkProperties;
-import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 import android.net.NetworkSpecifier;
 import android.net.wifi.aware.DiscoverySession;
 import android.net.wifi.aware.PeerHandle;
-import android.net.wifi.aware.PublishDiscoverySession;
-import android.net.wifi.aware.WifiAwareNetworkSpecifier;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.ServerSocket;
-import java.net.SocketException;
-import java.util.Enumeration;
 
 public abstract class AbstractConnection {
 
@@ -49,7 +39,6 @@ public abstract class AbstractConnection {
             connectivityManager.requestNetwork(networkRequest, new OwnNetworkCallback(this));
 
             while (!getConnected()){
-                System.out.println("no conectado");
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {

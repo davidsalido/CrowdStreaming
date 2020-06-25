@@ -12,18 +12,15 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.net.wifi.aware.WifiAwareSession;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.crowdstreaming.R;
 import com.crowdstreaming.net.Publisher;
 import com.crowdstreaming.net.Subscriber;
-import com.crowdstreaming.net.SubscriberSingleton;
+import com.crowdstreaming.net.TSubscriber;
 import com.crowdstreaming.net.WifiAwareSessionUtillities;
-import com.crowdstreaming.ui.avaliablesstreamings.AvaliablesStreamingsFragment;
 import com.crowdstreaming.ui.streaming.StreamingView;
 
 import org.videolan.libvlc.IVLCVout;
@@ -65,7 +62,7 @@ public class WatchStreamingActivity extends AppCompatActivity implements Texture
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
 
-        subscriber = SubscriberSingleton.subscriber;
+        subscriber = TSubscriber.subscriber;
         subscriber.setObserver(this);
 
         finished = findViewById(R.id.finished);
@@ -90,7 +87,6 @@ public class WatchStreamingActivity extends AppCompatActivity implements Texture
 
 
     private void viewStreaming(){
-        System.out.println("viewing");
 
         ArrayList<String> options = new ArrayList<String>();
         options.add("--aout=opensles"); // time stretching
@@ -116,8 +112,6 @@ public class WatchStreamingActivity extends AppCompatActivity implements Texture
         vout.setWindowSize(mWidth, mHeight);
         vout.addCallback(WatchStreamingActivity.this);
         vout.attachViews();
-
-        System.out.println(videoFilePath);
 
         Media m = new Media(libvlc, Uri.parse("http://127.0.0.1:8888/" + videoFilePath));
 
@@ -175,8 +169,8 @@ public class WatchStreamingActivity extends AppCompatActivity implements Texture
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-            SubscriberSingleton.subscriber.setObserver(null);
-            SubscriberSingleton.subscriber.closeSocket();
+            TSubscriber.subscriber.setObserver(null);
+            TSubscriber.subscriber.closeSocket();
             textureView.setVisibility(View.INVISIBLE);
             streamProxy.stop();
             finished.setVisibility(View.VISIBLE);

@@ -1,5 +1,5 @@
 package com.crowdstreaming.net;
 
-public class SubscriberSingleton {
+public class TSubscriber {
     public static Subscriber subscriber;
 }

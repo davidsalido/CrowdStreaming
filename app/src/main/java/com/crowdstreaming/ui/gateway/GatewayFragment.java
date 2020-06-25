@@ -5,36 +5,24 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
-import org.apache.commons.io.IOUtils;
-import org.json.*;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.widget.Toast;
-
 import com.crowdstreaming.R;
 
-import java.io.BufferedInputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+
 import java.io.InputStream;
-import java.io.StringReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import info.guardianproject.netcipher.proxy.OrbotHelper;
-import info.guardianproject.netcipher.proxy.StatusCallback;
 
 
 public class GatewayFragment extends Fragment {
@@ -75,7 +63,6 @@ public class GatewayFragment extends Fragment {
                         String jsonString = IOUtils.toString(in, encoding);
                         JSONArray arr = new JSONArray(jsonString);
 
-                        System.out.println(jsonString);
 
                         for (int i = 0; i < arr.length(); i++) {
                             String title = arr.getJSONObject(i).getString("title");

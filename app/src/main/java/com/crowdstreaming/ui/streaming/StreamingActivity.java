@@ -1,8 +1,5 @@
 package com.crowdstreaming.ui.streaming;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -17,11 +14,13 @@ import android.os.ParcelFileDescriptor;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
+
 import com.crowdstreaming.R;
 import com.crowdstreaming.net.Publisher;
 import com.crowdstreaming.net.WifiAwareSessionUtillities;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -30,14 +29,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class StreamingActivity extends AppCompatActivity implements StreamingView{
 
@@ -184,13 +180,11 @@ public class StreamingActivity extends AppCompatActivity implements StreamingVie
             if(!socketOutputs.isEmpty()){
                 for(Pair pair:socketOutputs) {
                     if (!pair.metadataSent) {
-                        System.out.println("Metadata mandados");
                         pair.socketOutput.write(metadata, 0, metadata.length);
                         pair.metadataSent = true;
                     }
                     else{
                         pair.socketOutput.write(buffer, 0, count);
-                        //System.out.println("Enviando a " + pair.socketOutput);
                     }
 
                 }

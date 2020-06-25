@@ -114,7 +114,6 @@ public class VideoPlayerActivity extends AppCompatActivity  implements TextureVi
     }
 
     private void startPlayVideo(){
-        System.out.println("startingg");
 
         ArrayList<String> options = new ArrayList<String>();
         options.add("--aout=opensles"); // time stretching
@@ -143,8 +142,6 @@ public class VideoPlayerActivity extends AppCompatActivity  implements TextureVi
         vout.setWindowSize(mWidth, mHeight);
         vout.addCallback(VideoPlayerActivity.this);
         vout.attachViews();
-
-        System.out.println(videoFilePath);
 
         Media m = new Media(libvlc,videoFilePath);
 

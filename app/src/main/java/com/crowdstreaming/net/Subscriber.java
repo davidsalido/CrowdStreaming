@@ -1,7 +1,5 @@
 package com.crowdstreaming.net;
 
-import android.icu.util.Output;
-import android.net.ConnectivityManager;
 import android.net.wifi.aware.PeerHandle;
 import android.net.wifi.aware.SubscribeConfig;
 import android.net.wifi.aware.SubscribeDiscoverySession;
@@ -17,7 +15,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
@@ -46,7 +43,6 @@ public class Subscriber extends OwnDiscoverySessionCallback {
     @Override
     public void onMessageSendFailed(@SuppressWarnings("unused") int messageId) {
         super.onMessageSendFailed(messageId);
-        System.out.println("No ha llegado");
     }
 
     @Override
@@ -54,7 +50,6 @@ public class Subscriber extends OwnDiscoverySessionCallback {
         super.onServiceDiscovered(peerHandle,serviceSpecificInfo,matchFilter);
         this.setPeerHandle(peerHandle);
         session.sendMessage(peerHandle,1,"identifyrequest".getBytes());
-
     }
 
 
@@ -78,7 +73,6 @@ public class Subscriber extends OwnDiscoverySessionCallback {
             setPortToUse(Integer.parseInt(messageString.split(":")[1]));
         }
         else if(messageString.contains("streamingstarted")){
-            System.out.println("Vista cambiar");
             view.cambiarVista();
         }
         else {
@@ -125,7 +119,6 @@ public class Subscriber extends OwnDiscoverySessionCallback {
                     nodoTransito.write(metadata,0,4096);
                     metadata = null;
                 }
-                System.out.println("Mandando");
                 nodoTransito.write(buffer,0,read);
             }
             fos.write(buffer,0,read);

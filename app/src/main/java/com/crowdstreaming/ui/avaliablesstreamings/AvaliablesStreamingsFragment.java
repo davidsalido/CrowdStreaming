@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,16 +23,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.crowdstreaming.R;
 import com.crowdstreaming.net.Publisher;
 import com.crowdstreaming.net.Subscriber;
-import com.crowdstreaming.net.SubscriberSingleton;
+import com.crowdstreaming.net.TSubscriber;
 import com.crowdstreaming.net.WifiAwareSessionUtillities;
-import com.crowdstreaming.ui.streaming.StreamingActivity;
 import com.crowdstreaming.ui.streaming.StreamingView;
 import com.crowdstreaming.ui.watchstreaming.SubscriberObserver;
 import com.crowdstreaming.ui.watchstreaming.WatchStreamingActivity;
 
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -88,7 +84,7 @@ public class AvaliablesStreamingsFragment extends Fragment implements Avaliables
         subscriber = new Subscriber(AvaliablesStreamingsFragment.this);
 
         session.subscribe(Subscriber.CONFIGSUBS,subscriber,null);
-        SubscriberSingleton.subscriber = subscriber;
+        TSubscriber.subscriber = subscriber;
 
     }
 
@@ -139,7 +135,6 @@ public class AvaliablesStreamingsFragment extends Fragment implements Avaliables
                     else{
                         file = File.createTempFile("tempvideo",".mp4", getContext().getCacheDir());
                         videoFilePath = file.getAbsolutePath();
-                        System.out.println("Path nuestro: " + videoFilePath);
                         file.deleteOnExit();
                     }
                     subscriber.saveFile(file);
