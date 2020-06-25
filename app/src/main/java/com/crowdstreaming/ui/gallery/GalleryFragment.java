@@ -1,34 +1,24 @@
 package com.crowdstreaming.ui.gallery;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ThumbnailUtils;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.ListView;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.crowdstreaming.R;
 import com.crowdstreaming.ui.videoplayer.VideoPlayerActivity;
-import com.crowdstreaming.ui.watchstreaming.WatchStreamingActivity;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import wseemann.media.FFmpegMediaMetadataRetriever;
 
@@ -81,7 +71,6 @@ public class GalleryFragment extends Fragment {
                 int size = videoFiles.size();
                 for (int i = 0; i < size; i++) {
                     try {
-                        System.out.println(videoFiles.get(i).getPath());
                         mmr.setDataSource(videoFiles.get(i).getPath());
                         Bitmap b = mmr.getFrameAtTime(0, FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
                         galleryListData.get(i).setThumbail(rotateBitmap(b));

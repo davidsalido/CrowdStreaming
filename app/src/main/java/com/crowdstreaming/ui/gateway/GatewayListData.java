@@ -1,7 +1,5 @@
 package com.crowdstreaming.ui.gateway;
 
-import android.graphics.Bitmap;
-
 public class GatewayListData {
 
     private String title, onionUrl, logoUrl;

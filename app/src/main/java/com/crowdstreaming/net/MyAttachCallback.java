@@ -3,8 +3,6 @@ package com.crowdstreaming.net;
 import android.net.wifi.aware.AttachCallback;
 import android.net.wifi.aware.WifiAwareSession;
 
-import com.crowdstreaming.ui.main.MainView;
-
 public class MyAttachCallback extends AttachCallback {
 
 
@@ -14,7 +12,6 @@ public class MyAttachCallback extends AttachCallback {
 
     @Override
     public void onAttached(WifiAwareSession session) {
-        System.out.println("Jeje ha funcado");
         WifiAwareSessionUtillities.setSession(session);
     }
 

@@ -63,12 +63,10 @@ public class StreamProxy implements Runnable {
         isRunning = true;
         while (isRunning) {
             try {
-                System.out.println("cliente wait");
                 Socket client = socket.accept();
                 if (client == null) {
                     continue;
                 }
-                System.out.println("client connected");
 
                 StreamToMediaPlayerTask task = new StreamToMediaPlayerTask(client);
                 if (task.processRequest()) {
@@ -106,7 +104,6 @@ public class StreamProxy implements Runnable {
                 System.out.println( "Error reading HTTP request header from stream:");
                 return false;
             }
-            System.out.println(headers);
             // Get the important bits from the headers
             String[] headerLines = headers.split("\n");
             String urlLine = headerLines[0];
@@ -120,7 +117,6 @@ public class StreamProxy implements Runnable {
                 urlLine = urlLine.substring(1, charPos);
             }
             localPath = urlLine;
-            System.out.println(localPath);
 
 
             return true;

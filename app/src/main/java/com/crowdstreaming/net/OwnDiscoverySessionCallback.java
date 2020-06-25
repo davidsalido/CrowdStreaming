@@ -2,7 +2,6 @@ package com.crowdstreaming.net;
 
 import android.net.wifi.aware.DiscoverySessionCallback;
 import android.net.wifi.aware.PeerHandle;
-import android.widget.Toast;
 
 import com.crowdstreaming.net.connection.AbstractConnection;
 
