@@ -4,6 +4,8 @@
 
 This application allows you to broadcast your device's camera and microphone via Wifi Aware.
 
+This is a Final Project from Complutense University of Madrid developed during the years 2019/2020.
+
 CrowdStreaming is licensed under the [MIT License](https://github.com/davidsalido/CrowdStreaming/blob/master/LICENSE)
 
 ## Authors
@@ -11,6 +13,10 @@ CrowdStreaming is licensed under the [MIT License](https://github.com/davidsalid
 - David Salido Camacho: https://github.com/davidsalido
 - Francisco Calero: https://github.com/FCalero
 - Sergio Manzanaro Caraballo: https://github.com/SergioManzanaro
+
+## Director
+
+- Simon Pickin
 
 ## Usage example
 
